@@ -60,6 +60,10 @@ export default defineConfig({
       workbox: {
         // Precachear todos los assets de Vite
         globPatterns: ['**/*.{js,css,html,png,svg,ico,woff2}'],
+        // CRÍTICO: sin globIgnores, el *.png pattern precachea apple-touch-icon.png.
+        // El precache SIEMPRE gana sobre runtimeCaching, así que NetworkOnly no sirve
+        // de nada sin excluir el archivo aquí primero.
+        globIgnores: ['**/apple-touch-icon.png'],
         // CRÍTICO para SPA: el SW sirve index.html para rutas de React Router
         navigateFallback: 'index.html',
         // Excluir rutas de API del fallback
