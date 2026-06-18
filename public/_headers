@@ -39,6 +39,12 @@
 /assets/*.css
   Cache-Control: public, max-age=31536000, immutable
 
+# ── iOS PWA icon — no-cache CRÍTICO: evita que iOS cachee una respuesta mala
+# (ej: cuando el archivo no existía aún y CF devolvía index.html como SPA fallback)
+# Esta regla va ANTES de /*.png para que tenga precedencia
+/apple-touch-icon.png
+  Cache-Control: no-cache, no-store, must-revalidate
+
 # ── Static assets ─────────────────────────────────────────────────────────────
 /assets/*
   Cache-Control: public, max-age=86400
