@@ -2,20 +2,37 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-    <!-- PWA: Web App Manifest -->
+    <!-- Viewport: viewport-fit=cover para iPhone X+ (notch/home bar) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- ── PWA: Web App Manifest (Android + moderno) ──────────────────────── -->
     <link rel="manifest" href="/manifest.webmanifest" />
 
-    <!-- PWA: iOS (Safari no usa el manifest, necesita estas metas) -->
+    <!-- ── PWA: iOS Safari ────────────────────────────────────────────────── -->
+    <!-- Activa el modo standalone al abrir desde pantalla de inicio -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
+    <!-- Barra de estado transparente (deja ver el fondo de la app) -->
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <!-- Nombre de la app en iOS -->
     <meta name="apple-mobile-web-app-title" content="Bangkok" />
-    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
 
-    <!-- PWA: Theme color (barra del navegador en Android) -->
-    <meta name="theme-color" content="#FF6B00" />
+    <!-- Icono para iOS — varias resoluciones para cubrir todos los iPhones/iPads
+         iOS elige el más cercano al tamaño que necesita.
+         El archivo raíz (apple-touch-icon.png) es el fallback de descubrimiento. -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- ── Theme color: colorea la barra del navegador en Android ─────────── -->
+    <meta name="theme-color" content="#111111" />
+
+    <!-- ── Otros meta mobile ──────────────────────────────────────────────── -->
+    <!-- Evita que iOS detecte teléfonos/emails y los convierta en links -->
+    <meta name="format-detection" content="telephone=no" />
+    <!-- Android: nombre de la app en el banner de instalación -->
+    <meta name="application-name" content="Bangkok Noodles" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
     <title>Bangkok — Sistema de Pedidos</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />

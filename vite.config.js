@@ -11,27 +11,44 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/*.png'],
+      // Incluir todos los assets estáticos del PWA en el precache
+      includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'icons/*.png'],
       manifest: {
         name: 'Bangkok Noodles',
         short_name: 'Bangkok',
-        description: 'Pide tu comida tailandesa favorita',
+        description: 'Pide tu comida tailandesa favorita — noodles & street food',
         start_url: '/',
+        scope: '/',
         display: 'standalone',
         orientation: 'portrait',
-        theme_color: '#FF6B00',
+        theme_color: '#111111',
         background_color: '#111111',
+        lang: 'es',
+        categories: ['food', 'lifestyle'],
         icons: [
+          // 192×192 — requerido por Chrome Android para el banner de instalación
           {
             src: 'icons/icon-192.png',
             sizes: '192x192',
             type: 'image/png',
+            purpose: 'any',
           },
+          // 180×180 — tamaño preferido por iOS
+          {
+            src: 'icons/icon-180.png',
+            sizes: '180x180',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          // 512×512 — splash screen en Android y pantalla de instalación
           {
             src: 'icons/icon-512.png',
             sizes: '512x512',
             type: 'image/png',
+            purpose: 'any',
           },
+          // Maskable — para Android adaptive icons (fondo recortado en círculo/squircle)
+          // purpose separado del 'any' para mejor compatibilidad
           {
             src: 'icons/icon-512.png',
             sizes: '512x512',
@@ -41,24 +58,36 @@ export default defineConfig({
         ],
       },
       workbox: {
+        // Precachear todos los assets de Vite
         globPatterns: ['**/*.{js,css,html,png,svg,ico,woff2}'],
-        // CRÍTICO para SPA PWA: sirve index.html para cualquier ruta de navegación
-        // que no esté en el precache (ej. /customer/menu, /worker/dashboard)
+        // CRÍTICO para SPA: el SW sirve index.html para rutas de React Router
         navigateFallback: 'index.html',
-        // No aplicar el fallback a rutas de API
+        // Excluir rutas de API del fallback
         navigateFallbackDenylist: [/\/api\//],
         runtimeCaching: [
           {
-            // Supabase API — network-first, TTL corto
+            // Supabase — network-first, caché de 5 min como fallback offline
             urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'supabase-api',
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 60 * 5, // 5 minutos
+                maxAgeSeconds: 60 * 5,
               },
               networkTimeoutSeconds: 10,
+            },
+          },
+          {
+            // Google Fonts — cache-first (las fuentes no cambian)
+            urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts',
+              expiration: {
+                maxEntries: 20,
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 año
+              },
             },
           },
         ],
