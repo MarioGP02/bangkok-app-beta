@@ -1,0 +1,39 @@
+# Cloudflare Pages — HTTP response headers
+# https://developers.cloudflare.com/pages/configuration/headers/
+
+# ── Security headers (applied to every response) ─────────────────────────────
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+
+# ── HTML — never cache so users always get the latest deploy ─────────────────
+/*.html
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+
+/
+  Cache-Control: no-cache, no-store, must-revalidate
+
+# ── Versioned JS/CSS assets — Vite adds a content hash to filenames
+#    so we can cache them forever safely ─────────────────────────────────────
+/assets/*.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+# ── Static assets (favicon, images, fonts) ───────────────────────────────────
+/assets/*
+  Cache-Control: public, max-age=86400
+
+/*.svg
+  Cache-Control: public, max-age=86400
+
+/*.png
+  Cache-Control: public, max-age=86400
+
+/*.ico
+  Cache-Control: public, max-age=86400
