@@ -8,9 +8,9 @@ import OrderCard     from '@/components/worker/OrderCard'
 import { formatPrice } from '@/lib/utils'
 import { ORDER_STATUS, PAY_STATUS } from '@/lib/constants'
 
-// QR URL reads from env so it works in local dev AND in Cloudflare Pages
-// Set VITE_APP_URL in Cloudflare Pages -> Settings -> Environment variables
-const QR_URL = `${import.meta.env.VITE_APP_URL ?? 'http://localhost:5173'}/qr`
+// window.location.origin resuelve al host real en tiempo de ejecución:
+// localhost en dev, URL de producción en Cloudflare — sin variables de entorno
+const QR_URL = `${window.location.origin}/qr`
 const QR_IMG = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(QR_URL)}&bgcolor=111111&color=ff6b00&format=png&margin=12`
 
 // --- QR Modal ---
