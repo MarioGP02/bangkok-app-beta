@@ -11,8 +11,8 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      // Incluir todos los assets estáticos del PWA en el precache
-      includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'icons/*.png'],
+      // apple-touch-icon.png EXCLUIDO del precache a propósito — ver regla NetworkOnly abajo
+      includeAssets: ['favicon.svg', 'icons/*.png'],
       manifest: {
         name: 'Bangkok Noodles',
         short_name: 'Bangkok',
@@ -65,6 +65,13 @@ export default defineConfig({
         // Excluir rutas de API del fallback
         navigateFallbackDenylist: [/\/api\//],
         runtimeCaching: [
+          {
+            // CRÍTICO para iOS: el SW nunca intercepta el icono de pantalla de inicio.
+            // Sin esto, si el SW precacheó una respuesta mala (HTML del SPA fallback
+            // cuando el archivo no existía), serviría HTML para siempre en lugar del PNG.
+            urlPattern: /\/apple-touch-icon\.png$/,
+            handler: 'NetworkOnly',
+          },
           {
             // Supabase — network-first, caché de 5 min como fallback offline
             urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
