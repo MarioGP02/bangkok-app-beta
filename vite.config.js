@@ -11,7 +11,6 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      // Include icon assets in the precache manifest
       includeAssets: ['icons/*.png'],
       manifest: {
         name: 'Bangkok Noodles',
@@ -34,7 +33,6 @@ export default defineConfig({
             type: 'image/png',
           },
           {
-            // Maskable icon — same file, OS crops to safe zone
             src: 'icons/icon-512.png',
             sizes: '512x512',
             type: 'image/png',
@@ -43,18 +41,22 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // Precache all build outputs
         globPatterns: ['**/*.{js,css,html,png,svg,ico,woff2}'],
+        // CRÍTICO para SPA PWA: sirve index.html para cualquier ruta de navegación
+        // que no esté en el precache (ej. /customer/menu, /worker/dashboard)
+        navigateFallback: 'index.html',
+        // No aplicar el fallback a rutas de API
+        navigateFallbackDenylist: [/\/api\//],
         runtimeCaching: [
           {
-            // Supabase API — network-first, short TTL
+            // Supabase API — network-first, TTL corto
             urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'supabase-api',
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 60 * 5, // 5 minutes
+                maxAgeSeconds: 60 * 5, // 5 minutos
               },
               networkTimeoutSeconds: 10,
             },
