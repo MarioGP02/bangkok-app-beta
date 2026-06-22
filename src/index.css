@@ -12,6 +12,8 @@
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    max-width: 100%;
   }
 
   body {
@@ -19,6 +21,13 @@
     color: #f0f0f0;
     font-family: 'Inter', sans-serif;
     min-height: 100vh;
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  #root {
+    overflow-x: hidden;
+    max-width: 100%;
   }
 
   /* Custom scrollbar */

@@ -33,7 +33,7 @@ export default function CustomerLayout() {
 
   return (
     <div
-      className="min-h-screen flex bg-bk-bg"
+      className="min-h-screen flex bg-bk-bg overflow-x-hidden w-full"
       style={{ background: 'radial-gradient(ellipse at 60% 0%, rgba(255,107,0,0.06) 0%, #080808 50%)' }}
     >
       {/* ── Desktop sidebar ──────────────────────────────────────────────────── */}
@@ -137,7 +137,7 @@ export default function CustomerLayout() {
       </aside>
 
       {/* ── Main area ────────────────────────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col md:ml-64 min-h-screen">
+      <div className="flex-1 flex flex-col md:ml-64 min-h-screen min-w-0 overflow-x-hidden">
 
         {/* Mobile header */}
         <header className="md:hidden flex items-center justify-between px-4 py-3

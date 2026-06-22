@@ -21,7 +21,7 @@ export default function WorkerLayout() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-bk-bg flex flex-col">
+    <div className="min-h-screen bg-bk-bg flex flex-col overflow-x-hidden w-full">
 
       {/* ── Topbar ─────────────────────────────────────────────────────────── */}
       <header className="sticky top-0 z-40 flex items-center justify-between
