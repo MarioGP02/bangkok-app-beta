@@ -1,8 +1,9 @@
-# Cloudflare Workers — Static Assets (React SPA)
+# Cloudflare Workers — SPA + API de pagos
 # https://developers.cloudflare.com/workers/static-assets/
 
 name = "bangkok-app-beta"
 compatibility_date = "2026-06-18"
+main = "worker.js"
 
 [assets]
 directory = "dist"

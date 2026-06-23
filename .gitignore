@@ -39,3 +39,4 @@ Thumbs.db
 # ── Cache ─────────────────────────────────────────────────────────────────────
 .cache/
 *.tsbuildinfo
+vite.config.js.timestamp-*.mjs
