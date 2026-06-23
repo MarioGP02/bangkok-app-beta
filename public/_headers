@@ -6,7 +6,7 @@
   X-Content-Type-Options: nosniff
   X-XSS-Protection: 1; mode=block
   Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
 
 # ── Service Worker — NUNCA cachear, el browser siempre debe pedir la última versión
 /sw.js

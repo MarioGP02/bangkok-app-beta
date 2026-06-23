@@ -73,7 +73,11 @@ const StripeCardForm = forwardRef(function StripeCardForm({ total }, ref) {
     async pay() {
       if (!stripe || !elements) throw new Error('Stripe no inicializado')
 
-      // 1. Crear PaymentIntent en el Worker
+      // 1. submit() PRIMERO — valida el formulario antes de cualquier async
+      const { error: submitError } = await elements.submit()
+      if (submitError) throw new Error(submitError.message)
+
+      // 2. Crear PaymentIntent en el Worker
       const res = await fetch('/api/create-payment-intent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -86,14 +90,14 @@ const StripeCardForm = forwardRef(function StripeCardForm({ total }, ref) {
       const data = await res.json()
       if (!res.ok || data.error) throw new Error(data.error ?? 'Error al crear el pago')
 
-      // 2. Confirmar pago con Stripe
+      // 3. Confirmar pago con Stripe
       const { error } = await stripe.confirmPayment({
         elements,
         clientSecret: data.clientSecret,
         confirmParams: {
           return_url: `${window.location.origin}/customer/tracking`,
         },
-        redirect: 'if_required', // evita redirección para tarjetas normales
+        redirect: 'if_required',
       })
 
       if (error) throw new Error(error.message)
