@@ -1,6 +1,9 @@
-import { useNavigate } from 'react-router-dom'
-import { Clock, MapPin } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Clock, MapPin, CheckCircle2, XCircle } from 'lucide-react'
 import useOrderStore from '@/store/orderStore'
+import useUserStore  from '@/store/userStore'
+import useUIStore    from '@/store/uiStore'
 import DinoGame      from '@/components/customer/DinoGame'
 import { ORDER_STATUS, PREP_TIME_PER_ORDER } from '@/lib/constants'
 
@@ -309,7 +312,51 @@ const STATUS_MSG = {
 // ── Page ───────────────────────────────────────────────────────────────────
 
 export default function TrackingPage() {
-  const navigate = useNavigate()
+  const navigate        = useNavigate()
+  const [searchParams]  = useSearchParams()
+
+  const confirmPaymentDB  = useOrderStore((s) => s.confirmPayment)
+  const currentOrderId    = useOrderStore((s) => s.currentOrderId)
+  const setCurrentOrderId = useOrderStore.setState
+  const addStamp          = useUserStore((s) => s.addStamp)
+  const guestMode         = useUserStore((s) => s.guestMode)
+  const openGuestUpsell   = useUIStore((s) => s.openGuestUpsell)
+
+  const [paymentBanner, setPaymentBanner] = useState(null) // 'success' | 'error'
+  const handledRef = useRef(false)
+
+  // ── Handle Stripe Bizum redirect ─────────────────────────────────────────
+  useEffect(() => {
+    if (handledRef.current) return
+    const redirectStatus = searchParams.get('redirect_status')
+    const orderId        = searchParams.get('order_id')
+    if (!redirectStatus || !orderId) return
+
+    handledRef.current = true
+
+    // Ensure the order is tracked even if store was wiped (e.g. hard reload)
+    if (!currentOrderId) {
+      setCurrentOrderId({ currentOrderId: orderId })
+    }
+
+    // Clean URL immediately (don't pollute history)
+    window.history.replaceState({}, '', '/customer/tracking')
+
+    if (redirectStatus === 'succeeded') {
+      confirmPaymentDB(orderId)
+        .then(() => {
+          if (!guestMode) addStamp().catch(() => {})
+          setPaymentBanner('success')
+          if (guestMode) setTimeout(() => openGuestUpsell(), 1800)
+          setTimeout(() => setPaymentBanner(null), 5000)
+        })
+        .catch(() => setPaymentBanner('error'))
+    } else {
+      setPaymentBanner('error')
+      setTimeout(() => setPaymentBanner(null), 6000)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const order = useOrderStore((s) =>
     s.orders.find((o) => o.id === s.currentOrderId) ?? null
@@ -344,6 +391,30 @@ export default function TrackingPage() {
 
   return (
     <div className="flex flex-col animate-fade-in">
+
+      {/* ── Bizum payment banner ──────────────────────────────────────────── */}
+      {paymentBanner === 'success' && (
+        <div className="mx-4 mt-3 flex items-center gap-2.5 bg-green-500/10 border border-green-500/30
+                        rounded-xl px-3.5 py-3 animate-fade-in">
+          <CheckCircle2 size={16} className="text-green-400 flex-shrink-0" />
+          <div>
+            <p className="text-[13px] font-bold text-green-300">¡Pago por Bizum confirmado!</p>
+            <p className="text-[10px] text-bk-muted mt-0.5">El equipo ya tiene tu pedido.</p>
+          </div>
+        </div>
+      )}
+      {paymentBanner === 'error' && (
+        <div className="mx-4 mt-3 flex items-center gap-2.5 bg-red-500/10 border border-red-500/30
+                        rounded-xl px-3.5 py-3 animate-fade-in">
+          <XCircle size={16} className="text-red-400 flex-shrink-0" />
+          <div>
+            <p className="text-[13px] font-bold text-red-300">Pago no completado</p>
+            <p className="text-[10px] text-bk-muted mt-0.5">
+              Inténtalo de nuevo o elige otro método.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* ── Gorilla zone ──────────────────────────────────────────────────── */}
       <div

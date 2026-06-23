@@ -182,6 +182,7 @@ const useOrderStore = create(
        *   notes?: string,
        *   subtotal: number, tax: number, total: number,
        *   payMethod: string, payLast4: string,
+       *   payStatus?: 'pending' | 'paid',   // default: 'paid'
        * }} payload
        * @returns {Promise<{ id: string, queuePosition: number, estimatedMinutes: number }>}
        */
@@ -208,7 +209,7 @@ const useOrderStore = create(
           total:             payload.total,
           pay_method:        payload.payMethod,
           pay_last4:         payload.payLast4 ?? '',
-          pay_status:        PAY_STATUS.PAID,
+          pay_status:        payload.payStatus ?? PAY_STATUS.PAID,
           status:            ORDER_STATUS.RECEIVED,
           queue_position:    queuePosition,
           estimated_minutes: estimatedMinutes,

@@ -46,18 +46,29 @@ async function handleCreatePaymentIntent(request, env) {
       return json({ error: 'Importe inválido (mínimo 0,50 €)' }, 400)
     }
 
+    // Si se especifican métodos concretos (ej: ['bizum']), usarlos;
+    // si no, activar automatic_payment_methods para tarjeta.
+    const paymentMethodTypes = Array.isArray(body.paymentMethodTypes) ? body.paymentMethodTypes : null
+
+    const params = {
+      amount:      String(amount),
+      currency:    'eur',
+      description: body.description ?? 'Bangkok Noodles — pedido',
+    }
+
+    if (paymentMethodTypes) {
+      paymentMethodTypes.forEach((t, i) => { params[`payment_method_types[${i}]`] = t })
+    } else {
+      params['automatic_payment_methods[enabled]'] = 'true'
+    }
+
     const stripeRes = await fetch('https://api.stripe.com/v1/payment_intents', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${env.STRIPE_SECRET_KEY}`,
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: new URLSearchParams({
-        amount: String(amount),
-        currency: 'eur',
-        'automatic_payment_methods[enabled]': 'true',
-        description: body.description ?? 'Bangkok Noodles — pedido',
-      }),
+      body: new URLSearchParams(params),
     })
 
     const pi = await stripeRes.json()
